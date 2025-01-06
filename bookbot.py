@@ -1,22 +1,29 @@
 import sys
-#TODO: Cleanup the code
+import json
 
 # Check number of passed arguments
 if len(sys.argv) < 2:
-    print("Usage: python bookbot.py <path_to_file>")
+    print("Usage: python bookbot.py <filename>")
     sys.exit(1)
 elif len(sys.argv) > 2:
-    # print("Too many arguments.\nExpected: 1 argument\nActual: " + str(len(sys.argv) - 1) + " arguments(" + str(sys.argv[1:]) + ")")
     print(f"Too many arguments.\nExpected: 1 argument\nActual: {(len(sys.argv) - 1)} arguments ({sys.argv[1:]})")
     sys.exit(1)
 
+config_path = "./config.json"
+
+# Load the configuration file and assign bookpath value to variable
+with open(config_path, 'r') as config_file:
+    config = json.load(config_file)
+
+bookpath = config.get("bookpath")
+
 # Set the path to the file
-# TODO: Add config file which contains default books/ directory, so that the user can type just the filename
-path_to_file = sys.argv[1]  
+filename = f"{sys.argv[1]}.txt"
+full_path = f"{bookpath}/{filename}"
 
 # Read the file
-with open(path_to_file) as f:
-    file_contents = f.read()
+with open(full_path,'r') as book:
+    file_contents = book.read()
 
 # Function to count the number of words in a file
 def word_count(file_contents):
@@ -39,11 +46,8 @@ def letter_count(file_contents):
                         letter_count_dir[letter] = 1
     return letter_count_dir
 
-# Debugging
-# print(f"Word count test: {word_count(file_contents)}")
-# print(f"Letter count test: {letter_count(file_contents)}")
-
-print(f"--- Begin report of {path_to_file} ---")
+# Book report printout
+print(f"--- Begin report of {filename} ---")
 print(f"{word_count(file_contents)} words found in the file.\n")
 for letter in sorted(letter_count(file_contents), reverse=True, key=letter_count(file_contents).get):
     print(f"{letter} found {letter_count(file_contents)[letter]} times.")
